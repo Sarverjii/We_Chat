@@ -20,10 +20,13 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(
-          Icons.add_comment_outlined,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: FloatingActionButton(
+          onPressed: () {},
+          child: const Icon(
+            Icons.add_comment_outlined,
+          ),
         ),
       ),
       body: const Center(
