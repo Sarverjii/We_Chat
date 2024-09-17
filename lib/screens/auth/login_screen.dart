@@ -10,13 +10,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  //The boolean used to
+  //The boolean used for the Main Icon Animation
   bool _isAnimate = false;
 
   @override
   void initState() {
-    Future.delayed(const Duration(microseconds: 500), () {
+    //Adds the Delay before starting the animation
+    Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
+        //Sets the boolean that triggers the animation
         _isAnimate = true;
       });
     });
@@ -41,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 duration: const Duration(seconds: 1),
                 top: mq.height * 0.15,
                 width: mq.width * 0.6,
+                //Using ternary operator to do the animation
                 left: _isAnimate ? mq.width * 0.2 : mq.width,
                 child: Image.asset('images/icon.png')),
             //The google sign in button

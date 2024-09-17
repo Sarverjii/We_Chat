@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:we_chat/screens/auth/login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
+import 'package:we_chat/screens/splash_screen.dart';
+import 'firebase_options.dart';
 
 late Size mq;
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  //Removes the System UI on opening the app i.e. on the Splash Screen
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  //Sets the orientation of the app as Portraint
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+      .then((value) {
+    //We put this inside the then function becuase SystemChrome is a Future function and
+    //we dont want that the app run before setting the orientation and give any glitches
+    _initializeFirebase();
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +42,14 @@ class MyApp extends StatelessWidget {
           shadowColor: Colors.black,
         ),
       ),
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
+}
+
+//Initializes Firebase
+_initializeFirebase() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 }
