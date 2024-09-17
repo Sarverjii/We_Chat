@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:we_chat/screens/auth/login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,8 +21,14 @@ class HomeScreen extends StatelessWidget {
           ),
           //Adds the Menu Icon
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
+            onPressed: () async {
+              // Login for Logout
+              await FirebaseAuth.instance.signOut();
+              await GoogleSignIn().signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => LoginScreen()));
+            },
+            icon: Icon(Icons.logout),
           ),
         ],
       ),

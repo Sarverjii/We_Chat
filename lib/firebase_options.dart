@@ -63,6 +63,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1070075590447',
     projectId: 'we-chat-454aa',
     storageBucket: 'we-chat-454aa.appspot.com',
+    androidClientId: '1070075590447-e9q3n7ukk09ae6k8ftpup7ni42lv7bie.apps.googleusercontent.com',
+    iosClientId: '1070075590447-lceh0vto3lpcofjf2ikkosc72jf7761b.apps.googleusercontent.com',
     iosBundleId: 'com.example.weChat',
   );
+
 }

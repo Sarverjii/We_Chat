@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/screens/auth/login_screen.dart';
+import 'package:we_chat/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,9 +23,18 @@ class _SplashScreenState extends State<SplashScreen> {
         //Sets the Control Center as Transparent
         SystemChrome.setSystemUIOverlayStyle(
             const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-        //Navigates to the LoginScreen without an option to come back
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+
+        //Checking if the user is already signed in or not
+        if (FirebaseAuth.instance.currentUser != null) {
+          print("\n User  -  ${FirebaseAuth.instance.currentUser}");
+          //Navigates to the HomeScreen without an option to come back
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        } else {
+          //Navigates to the LoginScreen without an option to come back
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+        }
       });
     });
 

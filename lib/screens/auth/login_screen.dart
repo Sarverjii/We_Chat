@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:we_chat/helper/dialogs.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/screens/home_screen.dart';
 
@@ -24,6 +27,50 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     super.initState();
+  }
+
+  //Handels the Login Button Click
+  _handleGoogleBtnClick() {
+    //To Show the Progress Bar
+    Dialogs.showProgressBar(context);
+    //Calling the Firebase Function for Google Signin
+    _signInWithGoogle().then((user) {
+      //To Hide the Progress Bar
+      Navigator.pop(context);
+      //Checking if user is null and performing the required tasks
+      if (user != null) {
+        print("\n User : ${user.user}");
+        print("\n User : ${user.additionalUserInfo}");
+        //Navigating to the Home Screen
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      }
+    });
+  }
+
+  //The Function Provided by Firebase for google Login
+  Future<UserCredential?> _signInWithGoogle() async {
+    // Trigger the authentication flow
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print("\n _signInWithGoogle $e");
+      Dialogs.showSnackbar(context, "Something went wrong!!(Check Internet)");
+      return null;
+    }
   }
 
   @override
@@ -60,10 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         elevation: 1),
                     onPressed: () {
                       //Navigates to the HomeScreen and we use pushReplacement so that the user cannot come back to this screen
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const HomeScreen()));
+                      _handleGoogleBtnClick();
                     },
                     //Puts the google Icon
                     icon: Image.asset(
