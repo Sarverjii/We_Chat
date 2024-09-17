@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:we_chat/screens/auth/login_screen.dart';
-import 'package:we_chat/screens/home_screen.dart';
 
 late Size mq;
 
@@ -29,7 +28,7 @@ class MyApp extends StatelessWidget {
           shadowColor: Colors.black,
         ),
       ),
-      home: LoginScreen(),
+      home: const LoginScreen(),
     );
   }
 }
