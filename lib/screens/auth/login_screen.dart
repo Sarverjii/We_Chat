@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/helper/dialogs.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/screens/home_screen.dart';
@@ -65,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      return await APIs.auth.signInWithCredential(credential);
     } catch (e) {
       print("\n _signInWithGoogle $e");
       Dialogs.showSnackbar(context, "Something went wrong!!(Check Internet)");

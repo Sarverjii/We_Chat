@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/screens/auth/login_screen.dart';
 import 'package:we_chat/screens/home_screen.dart';
@@ -25,8 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
             const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
         //Checking if the user is already signed in or not
-        if (FirebaseAuth.instance.currentUser != null) {
-          print("\n User  -  ${FirebaseAuth.instance.currentUser}");
+        if (APIs.auth.currentUser != null) {
+          print("\n User  -  ${APIs.auth.currentUser}");
           //Navigates to the HomeScreen without an option to come back
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => const HomeScreen()));
