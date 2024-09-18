@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -35,16 +37,26 @@ class _LoginScreenState extends State<LoginScreen> {
     //To Show the Progress Bar
     Dialogs.showProgressBar(context);
     //Calling the Firebase Function for Google Signin
-    _signInWithGoogle().then((user) {
+    _signInWithGoogle().then((user) async {
       //To Hide the Progress Bar
       Navigator.pop(context);
       //Checking if user is null and performing the required tasks
       if (user != null) {
-        print("\n User : ${user.user}");
-        print("\n User : ${user.additionalUserInfo}");
-        //Navigating to the Home Screen
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        if (await APIs.existUser()) {
+          log("User Exists");
+          //Navigating to the Home Screen
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        } else {
+          log("Created User : ${user.user}");
+          await APIs.createUser().then((value) => {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const HomeScreen()))
+              });
+        }
+
+        // log("\n User : ${user.user}");
+        // log("\n User Additional Info : ${user.additionalUserInfo}");
       }
     });
   }
@@ -68,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Once signed in, return the UserCredential
       return await APIs.auth.signInWithCredential(credential);
     } catch (e) {
-      print("\n _signInWithGoogle $e");
+      log("\n _signInWithGoogle $e");
       Dialogs.showSnackbar(context, "Something went wrong!!(Check Internet)");
       return null;
     }

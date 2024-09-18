@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_chat/api/apis.dart';
@@ -26,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
         //Checking if the user is already signed in or not
         if (APIs.auth.currentUser != null) {
-          print("\n User  -  ${APIs.auth.currentUser}");
+          log("\n User : ${APIs.auth.currentUser}");
           //Navigates to the HomeScreen without an option to come back
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => const HomeScreen()));
