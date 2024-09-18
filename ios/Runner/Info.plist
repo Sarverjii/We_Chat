@@ -59,5 +59,11 @@
 			</dict>
 		</array>
 
+
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>App requires access to the photo library for picking photos.</string>
+		<key>NSCameraUsageDescription </key>
+		<string>App requires access to camera to click pictures.</string>
+
 	</dict>
 </plist>

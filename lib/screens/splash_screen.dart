@@ -23,8 +23,9 @@ class _SplashScreenState extends State<SplashScreen> {
         //Brings back the UI of the Phone
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         //Sets the Control Center as Transparent
-        SystemChrome.setSystemUIOverlayStyle(
-            const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.white,
+            statusBarColor: Colors.transparent));
 
         //Checking if the user is already signed in or not
         if (APIs.auth.currentUser != null) {

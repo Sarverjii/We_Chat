@@ -1,9 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/models/chat_user.dart';
+import 'package:we_chat/screens/chat_screen.dart';
 
 class ChatUserCard extends StatefulWidget {
   final ChatUser user;
@@ -23,7 +22,14 @@ class _ChatUserCardState extends State<ChatUserCard> {
           horizontal: mq.width * 0.04, vertical: mq.height * 0.01),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ChatScreen(
+                        user: widget.user,
+                      )));
+        },
         child: ListTile(
             leading: CircleAvatar(
               radius: mq.height * 0.0275, // Set a radius for a circular avatar
