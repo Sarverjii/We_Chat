@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:we_chat/models/chat_user.dart';
+import 'package:we_chat/models/message.dart';
 
 class APIs {
   //for saving current user info
@@ -100,7 +101,46 @@ class APIs {
 
   ///*********************Messages Related API****************/
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
-    return APIs.firestore.collection('messages').snapshots();
+  static String _getConversationId(String otherUserId) {
+    return otherUserId.hashCode <= currentUser.uid.hashCode
+        ? '${otherUserId}_${currentUser.uid}'
+        : '${currentUser.uid}_${otherUserId}';
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
+      String OtherUserId) {
+    return APIs.firestore
+        .collection('chats/${_getConversationId(OtherUserId)}/messages')
+        .snapshots();
+  }
+
+  static Future<void> sendMessage(ChatUser otherUser, String msg) async {
+    // Get the current timestamp
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Create a new message object
+    Message message = Message(
+      toID: otherUser.id,
+      msg: msg,
+      read: '',
+      type: Type
+          .text, // Assuming 'Type.text' is an enum you have for message types
+      sent: time,
+      fromID: currentUser.uid,
+    );
+
+    // Reference to the conversation in Firestore (it will create it if it doesn't exist)
+    final ref = firestore
+        .collection('chats/${_getConversationId(otherUser.id)}/messages');
+
+    // Create the message document in Firestore
+    await ref.doc(time).set(message.toJson());
+  }
+
+  static Future<void> updateReadStatus(Message message) async {
+    firestore
+        .collection('chats/${_getConversationId(message.fromID)}/messages')
+        .doc(message.sent)
+        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
   }
 }

@@ -7,7 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:we_chat/api/apis.dart';
 import 'package:we_chat/main.dart';
 import 'package:we_chat/models/chat_user.dart';
+import 'package:we_chat/models/message.dart';
 import 'package:we_chat/screens/home_screen.dart';
+import 'package:we_chat/widgets/message_card.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser user;
@@ -18,12 +20,15 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final textboxController = TextEditingController();
+  List<Message> _list = [];
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 179, 212, 233),
+        backgroundColor: const Color.fromARGB(255, 220, 240, 250),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           systemOverlayStyle: const SystemUiOverlayStyle(
@@ -35,48 +40,46 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: StreamBuilder(
-                  // Stream that listens to changes in the 'Messages' collection in Firestore
-                  stream: APIs.getAllMessages(),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.none:
-                      case ConnectionState.waiting:
-                        return const Center(
-                          //While waiting for the connection, show a loading spinner
-                          child: CircularProgressIndicator(),
-                        );
-                      case ConnectionState.active:
-                      case ConnectionState.done:
-                        // Once data is received, process it
-                        final data = snapshot.data?.docs;
-                        log("Data : ${jsonEncode(data![0].data())}");
-                        // // Map the Firestore documents to a list of ChatUser objects
-                        // _list =
-                        //     data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
-                        //         [];
-                        final _list = [];
+                stream: APIs.getAllMessages(widget.user.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // Show loading spinner while waiting for data
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                        if (_list.isNotEmpty) {
-                          // If the list is not empty, display the list of connections
-                          return ListView.builder(
-                              padding: EdgeInsets.only(top: mq.height * 0.01),
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: _list.length,
-                              itemBuilder: (context, index) {
-                                return Text("Messages : ${_list[index]}");
-                              });
-                        } else {
-                          // If no connections are found, display a message
-                          return const Center(
-                            child: Text(
-                              "Say Hi!! 👋",
-                              style: TextStyle(fontSize: 25),
-                            ),
-                          );
-                        }
-                    }
-                    ;
-                  }),
+                  if (snapshot.hasError) {
+                    // Handle errors gracefully
+                    return const Center(child: Text("Something went wrong"));
+                  }
+
+                  // Check if data is available and not empty
+                  final data = snapshot.data?.docs;
+                  if (data == null || data.isEmpty) {
+                    // If there are no messages, show a "Say Hi!" message
+                    return const Center(
+                      child: Text(
+                        "Say Hi!! 👋",
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    );
+                  }
+
+                  // Map Firestore documents to a list of messages
+                  _list = data.map((e) => Message.fromJson(e.data())).toList();
+
+                  // Display the list of messages
+                  return ListView.builder(
+                    padding: EdgeInsets.only(top: mq.height * 0.01),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: _list.length,
+                    itemBuilder: (context, index) {
+                      return MessageCard(
+                        message: _list[index],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
             _textBox(),
           ],
@@ -105,12 +108,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: Colors.blueAccent,
                       )),
                   SizedBox(width: mq.width * 0.02), // Add some space
-                  const Expanded(
+                  Expanded(
                     child: TextField(
+                      controller: textboxController,
                       keyboardType: TextInputType.multiline,
                       maxLines: 7,
                       minLines: 1,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           hintText: "Type Something...",
                           border: InputBorder.none,
                           hintStyle: TextStyle(color: Colors.blueAccent)),
@@ -131,7 +135,14 @@ class _ChatScreenState extends State<ChatScreen> {
             width: mq.width * 0.19,
             child: MaterialButton(
               shape: const CircleBorder(),
-              onPressed: () {},
+              onPressed: () {
+                //Sending Message
+                if (textboxController.text.isNotEmpty) {
+                  APIs.sendMessage(
+                      widget.user, textboxController.text.toString());
+                  textboxController.text = '';
+                }
+              },
               minWidth: 0,
               color: Colors.green,
               child: const Padding(
